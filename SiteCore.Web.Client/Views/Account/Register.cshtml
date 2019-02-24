@@ -48,6 +48,15 @@
         </div>
     </div>
     <div class="form-group">
+        Role
+        <div class="col-md-10">
+            @Html.DropDownList("StudentGender",
+                    new SelectList(Enum.GetValues(typeof(Roles))),
+                    "Select Role",
+                    new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <input type="submit" class="btn btn-default" value="Register" />
         </div>
