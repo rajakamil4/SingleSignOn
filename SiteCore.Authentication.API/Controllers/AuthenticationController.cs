@@ -20,13 +20,14 @@ namespace SiteCore.AuthenticationAPI.Controllers
 {
     [AutoInvalidateCacheOutput]
     public class AuthenticationController : ApiController
-    {               
+    {
 
         /// <summary>
         /// api/Authentication/GetUser/{id}
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize]
         [HttpGet]
         [Route("api/Authentication/GetUser/{id}")]
         [CacheOutput(ClientTimeSpan = 50, ServerTimeSpan = 50)]
@@ -61,7 +62,7 @@ namespace SiteCore.AuthenticationAPI.Controllers
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        
+        [Authorize]
         [HttpGet]
         [Route("api/Authentication/Authenticate/{username}/{password}")]
         [CacheOutput(ClientTimeSpan = 50, ServerTimeSpan = 50)]
@@ -91,6 +92,45 @@ namespace SiteCore.AuthenticationAPI.Controllers
 
         }
 
+        /// <summary>
+        /// Return roles collections to the caller
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet]
+        [Route("api/Authentication/AuthenticateUserAsync/{username}/{password}")]
+        [CacheOutput(ClientTimeSpan = 50, ServerTimeSpan = 50)]
+        public async Task<HttpResponseMessage> AuthenticateUserAsync(string username, string password)
+        {
+            ICommand command = new QueryCommand();
+            var role = await command.AuthenticateUserAsync(username, password);
+
+            if (role != null)
+            {
+                var message = "Successfully authenticated";                
+
+                return Request.CreateResponse<ResponseMessage<Role>>(HttpStatusCode.OK, 
+                    new ResponseMessage<Role>
+                    {
+                        Status = true,
+                        ReturnMessage = message,
+                        ReturnResult = role
+                    });
+
+            }
+
+            return Request.CreateResponse<ResponseMessage>(HttpStatusCode.OK,
+                    new ResponseMessage
+                    {
+                        Status = false,
+                        ReturnMessage = "This user does not exist"
+                    });
+
+        }
+
+        [Authorize]
         [HttpPost]
         [Route("api/Authentication/Register")]
         [CacheOutput(ClientTimeSpan = 50, ServerTimeSpan = 50)]

@@ -250,8 +250,73 @@ namespace SiteCore.AuthenticationAPI.Repository
             
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public async Task<Role> AuthenticateUserAsync(string username, string password)
+        {
+            var user = new User();
+            Role role = new Role();
+            bool status = false;
+                        
+            var asyncConnectionString = new SqlConnectionStringBuilder(_connection)
+            {
+                AsynchronousProcessing = true
+            }.ToString();
 
+            var connA = new SqlConnection(asyncConnectionString);
 
+            try
+            {
+
+                var spName = "sp_authenticate";
+
+                if (connA.State != ConnectionState.Open)
+                    await connA.OpenAsync();
+
+                using (var cmd = new SqlCommand())
+                {
+                    cmd.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = username;
+                    cmd.Parameters.Add("@Password", SqlDbType.NVarChar, 20).Value = password;
+                    cmd.Connection = connA;
+                    cmd.CommandText = spName;
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+
+                        while (await reader.ReadAsync())
+                        {
+                            status = true;
+                            user.UserId = Convert.ToInt32(reader["UserId"]);                            
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (connA.State == ConnectionState.Open)
+                    connA.Close();
+
+                if (status)
+                {
+                    var roles = this.GetRoles(user.UserId);
+                    role.RoleId = roles[0].RoleId;
+                    role.RoleName = roles[0].RoleName;
+                }
+            }
+
+            return role;
+
+        }
         /// <summary>
         /// Get Roles by userId
         /// </summary>

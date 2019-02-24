@@ -36,6 +36,13 @@ namespace SiteCore.AuthenticationAPI.Repository
         /// <param name="password"></param>
         /// <returns></returns>
         Task<bool> AuthenticateAsync(string username, string password);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        Task<Role> AuthenticateUserAsync(string username, string password);
 
 
     }
