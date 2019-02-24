@@ -9,22 +9,24 @@ namespace SiteCore.Web.Client.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,User")]
         public ActionResult Index()
         {
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
+            ViewBag.Message = "Only Admin can view this page.";
 
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = "Only admin can view this page";
 
             return View();
         }

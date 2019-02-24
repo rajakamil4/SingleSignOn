@@ -69,8 +69,6 @@ namespace SiteCore.AuthenticationAPI.Repository
                             user.Email = reader["Email"].ToString();
                             user.Password = reader["Password"].ToString();
                             user.IsActive = Convert.ToBoolean(reader["IsActive"]);
-                            Guid guid = Guid.Parse(reader["ActivationCode"].ToString());
-                            user.ActivationCode = guid;
 
                         }
                     }
@@ -124,9 +122,7 @@ namespace SiteCore.AuthenticationAPI.Repository
                     user.LastName = reader["LastName"].ToString();
                     user.Email = reader["Email"].ToString();
                     user.Password = reader["Password"].ToString();
-                    user.IsActive = Convert.ToBoolean(reader["IsActive"]);
-                    Guid guid = Guid.Parse(reader["ActivationCode"].ToString());
-                    user.ActivationCode = guid;
+                    user.IsActive = Convert.ToBoolean(reader["IsActive"]);                    
 
                 }
                 

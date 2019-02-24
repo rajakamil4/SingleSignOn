@@ -42,8 +42,7 @@ namespace SiteCore.AuthenticationAPI.Repository
                     new SqlParameter("@LastName", SqlDbType.NVarChar, 20, ParameterDirection.Input, true, 0, 0, null, DataRowVersion.Current, user.LastName),
                     new SqlParameter("@Email", SqlDbType.NVarChar, 20, ParameterDirection.Input, true, 0, 0, null, DataRowVersion.Current, user.Email),
                     new SqlParameter("@Password", SqlDbType.NVarChar, 20, ParameterDirection.Input, true, 0, 0, null, DataRowVersion.Current, user.Password),
-                    new SqlParameter("@IsActive", SqlDbType.Bit, 2, ParameterDirection.Input, true, 0, 0, null, DataRowVersion.Current, user.IsActive),
-                    new SqlParameter("@ActivationCode", SqlDbType.NVarChar, 50, ParameterDirection.Input, true, 0, 0, null, DataRowVersion.Current, user.ActivationCode.ToString()),
+                    new SqlParameter("@IsActive", SqlDbType.Bit, 2, ParameterDirection.Input, true, 0, 0, null, DataRowVersion.Current, user.IsActive),                    
                     new SqlParameter("@Id", SqlDbType.Int, 0, ParameterDirection.Output, true, 0, 0, null, DataRowVersion.Current, null),
                 };
 

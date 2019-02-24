@@ -80,13 +80,13 @@ namespace SiteCore.Web.Client.Controllers
 
             User user = new User() { Username = model.Username, Password = model.Password };
 
-            var usr = await ApiRepository.AuthenticateUserAsync(user);            
+            var role = await ApiRepository.AuthenticateUserAsync(user);            
 
-            if (usr != null)
+            if (role.RoleId != 0)
             {
                 FormsAuthentication.SetAuthCookie(model.Email, false);
 
-                var authTicket = new FormsAuthenticationTicket(1, user.Username, DateTime.Now, DateTime.Now.AddMinutes(20), false, usr.Roles[0].RoleName);
+                var authTicket = new FormsAuthenticationTicket(1, user.Username, DateTime.Now, DateTime.Now.AddMinutes(20), false, role.RoleName);
                 string encryptedTicket = FormsAuthentication.Encrypt(authTicket);
                 var authCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
                 HttpContext.Response.Cookies.Add(authCookie);
@@ -145,16 +145,17 @@ namespace SiteCore.Web.Client.Controllers
 
         //
         // GET: /Account/Register
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         public ActionResult Register()
         {
             return View();
         }
 
+        
         //
         // POST: /Account/Register
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
