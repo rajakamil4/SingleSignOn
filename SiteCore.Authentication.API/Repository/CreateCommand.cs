@@ -48,7 +48,7 @@ namespace SiteCore.AuthenticationAPI.Repository
 
                 SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "sp_insert_newUser", param);
 
-                userId = Convert.ToInt32(param[7].Value);
+                userId = Convert.ToInt32(param[6].Value);
             }
             catch (SqlException ex)
             {

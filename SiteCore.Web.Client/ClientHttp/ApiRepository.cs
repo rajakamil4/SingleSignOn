@@ -15,7 +15,7 @@ using RestSharp.Deserializers;
 
 namespace SiteCore.Web.Client.ClientHttp
 {
-    public static class ApiRepository
+    public class ApiRepository
     {
         public static async Task<bool> AuthenticateAsync(User user)
         {
@@ -100,6 +100,54 @@ namespace SiteCore.Web.Client.ClientHttp
             }
 
             return role;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public async Task<bool> RegisterUserAsync(User user)
+        {
+            var role = new Role();
+
+            string usernameApi = "Api1";
+            string passwordApi = "pass123";
+
+            string encoded = Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1").GetBytes($"{usernameApi}:{passwordApi}"));
+
+            var apiUri = ConfigurationManager.AppSettings["auth.Api.Uri"].ToString();
+            var client = new RestClient(apiUri);
+
+            try
+            {
+
+                var request = new RestRequest(string.Format("/api/Authentication/Register"), Method.POST);
+
+                request.AddHeader("Content-Type", "multipart/form-data");
+                request.AddHeader("Authorization", "Basic " + encoded);
+                request.RequestFormat = DataFormat.Json;
+                request.AddBody(user);                
+
+                IRestResponse<bool> response2 = await client.ExecutePostTaskAsync<bool>(request).ConfigureAwait(false);
+
+                if (response2.StatusCode == HttpStatusCode.OK)
+                {
+                    return true;
+
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return false;
         }
     }
 }

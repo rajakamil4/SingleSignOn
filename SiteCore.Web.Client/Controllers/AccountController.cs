@@ -13,6 +13,7 @@ using System.Web.Security;
 using SiteCore.Web.Client.Models;
 using SiteCore.Domain;
 using SiteCore.Web.Client.ClientHttp;
+using System.Collections.Generic;
 
 namespace SiteCore.Web.Client.Controllers
 {
@@ -142,43 +143,59 @@ namespace SiteCore.Web.Client.Controllers
                     return View(model);
             }
         }
-
-        //
-        // GET: /Account/Register
+                
         [Authorize(Roles = "Admin")]
         public ActionResult Register()
         {
             return View();
         }
-
+                
         
-        //
-        // POST: /Account/Register
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
-        {
+        {            
+
+            var repo = new ApiRepository();
+
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                var user = new User();
+                user.Username = model.Username;
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                
+                if (model.Password != model.ConfirmPassword)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
-                    // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    ModelState.AddModelError("", "Password not same with confirm password");
+                    return View(model);
+                }
+                user.Password = model.Password;
+                user.Email = model.Email;
+                user.IsActive = true;
 
+                IList<Role> roles = new List<Role>();
+                Role role = new Role();
+                role.RoleId = 1;
+                role.RoleName = "Admin"; //Admin by default
+                roles.Add(role);
+
+                user.Roles = roles;
+
+                var status = await repo.RegisterUserAsync(user);
+
+                if (status)
+                {
                     return RedirectToAction("Index", "Home");
                 }
-                AddErrors(result);
-            }
 
-            // If we got this far, something failed, redisplay form
+                ModelState.AddModelError("", "Error on registration");
+                return View(model);
+
+
+            }
+            
             return View(model);
         }
 
